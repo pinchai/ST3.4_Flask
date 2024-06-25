@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% include "header_style.html" %}
+    <title>Product</title>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            {% include "navbar.html" %}
+        </div>
+        <div class="mt-3 col-md-4 col-sm-12">
+            <img src="/static/product/{{ current_product.image }}">
+        </div>
+        <div class="mt-3 col-md-8 col-sm-12">
+            <h3>{{ current_product.title }}</h3>
+            <strong>{{ current_product.description }}</strong>
+            <h4>
+                <span class="badge badge-danger">
+                    {{ current_product.price }} $
+                </span>
+            </h4>
+            <hr>
+            <a target="_self" href="/checkout?id={{ current_product.id }}" class="btn btn-primary">Check Out</a>
+        </div>
+    </div>
+</div>
+</body>
+{% include "footer_script.html" %}
+</html>

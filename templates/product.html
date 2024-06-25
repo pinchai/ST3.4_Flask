@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% include "header_style.html" %}
+    <title>Product</title>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            {% include "navbar.html" %}
+        </div>
+        {% for item in product_list %}
+            <div
+                    class="col-md-3 col-sm-12 mt-3 mb-3 mr-3 ml-3"
+            >
+                <div class="card" style="width: 18rem;">
+                    <img src="/static/product/{{ item.image }}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title" style="text-transform: uppercase">{{  item.title }}</h5>
+                        <p class="card-text">{{ item.description }}</p>
+                        <a target="_blank" href="/product_detail?id={{ item.id }}" class="btn btn-primary">More...</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+
+    </div>
+</div>
+</body>
+{% include "footer_script.html" %}
+</html>
