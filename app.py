@@ -97,5 +97,23 @@ def jinja():
     return render_template('jinja.html')
 
 
+
+@app.get('/add_product')
+def add_product():
+    return render_template('add_product.html')
+
+
+@app.post('/submit_new_product')
+def submit_new_product():
+    product_id = request.form.get('product_id')
+    file = request.form.get('file')
+    title = request.form.get('title')
+    price = request.form.get('price')
+    category = request.form.get('category')
+    description = request.form.get('description')
+    # return f"{title} - {price} - {category} - {description}"
+
+
+
 if __name__ == '__main__':
     app.run()
