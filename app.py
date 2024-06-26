@@ -1,23 +1,26 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
+import os
 
+UPLOAD_FOLDER = 'image'
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 product_list = [
-        {
-            'id': '1',
-            'title': 'night cream',
-            'price': '20',
-            'description': "Some quick example text to build on the card title and make up the bulk of the card's content.",
-            'image': 'product1.jpg'
-        },
-        {
-            'id': '2',
-            'title': 'day cream',
-            'price': '25',
-            'description': "Some quick example text to build on the card title and make up the bulk of the card's content.",
-            'image': 'product2.jpg'
-        }
-    ]
+    {
+        'id': '1',
+        'title': 'night cream',
+        'price': '20',
+        'description': "Some quick example text to build on the card title and make up the bulk of the card's content.",
+        'image': 'product1.jpg'
+    },
+    {
+        'id': '2',
+        'title': 'day cream',
+        'price': '25',
+        'description': "Some quick example text to build on the card title and make up the bulk of the card's content.",
+        'image': 'product2.jpg'
+    }
+]
 
 
 @app.route('/')
@@ -97,7 +100,6 @@ def jinja():
     return render_template('jinja.html')
 
 
-
 @app.get('/add_product')
 def add_product():
     return render_template('add_product.html')
@@ -106,13 +108,18 @@ def add_product():
 @app.post('/submit_new_product')
 def submit_new_product():
     product_id = request.form.get('product_id')
-    file = request.form.get('file')
+    file = request.files['file']
     title = request.form.get('title')
     price = request.form.get('price')
     category = request.form.get('category')
     description = request.form.get('description')
-    # return f"{title} - {price} - {category} - {description}"
 
+    # Option 1
+    # file.save('/image', f.filename)
+    # Option 2
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'] + '/product', file.filename))
+
+    return redirect(url_for('add_product', name=file.filename))
 
 
 if __name__ == '__main__':
