@@ -22,3 +22,8 @@ file.save(os.path.join(app.config['UPLOAD_FOLDER'] + '/product', file.filename))
 ```python
 return redirect(url_for('add_product', name=file.filename))
 ```
+
+### Delete file upload
+```python
+os.remove(os.path.join(app.config['UPLOADED_ITEMS_DEST'], your_filename))
+```
