@@ -12,6 +12,48 @@
             {% include "navbar.html" %}
         </div>
         <div class="col-md-12 mt-5">
+            <div class="table-responsive">
+                <table id="product_table" class="display">
+                    <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Cost</th>
+                        <th>Price</th>
+                        <th>Description</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in data %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>
+                                <img
+                                        style="width: 15%;"
+                                        src="/static/image/no-image.png"
+                                >
+                            </td>
+                            <td>{{ item['title'] }}</td>
+                            <td>{{ item['cost'] }}</td>
+                            <td>{{ item['price'] }}</td>
+                            <td>{{ item['description'] }}</td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-outline-primary">
+                                    <i class="far fa-edit"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-danger">
+                                    <i class="far fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-12 mt-5">
             <div class="card">
                 <div class="card-header">
                     <h3>New Product</h3>
@@ -20,8 +62,23 @@
                     <form action="{{ url_for('submit_new_product') }}" method="post" enctype="multipart/form-data">
                         <input type="hidden" id="product_id" name="product_id" value="12121">
                         <div class="form-group">
-                            <label for="file">Image</label>
-                            <input type="file" class="form-control" id="file" name="file">
+                            <center>
+                                <img id="thumbnil"
+                                     style="width:10%;
+                                      margin-top:10px; border-radius: 50%"
+                                     src="/static/image/no-image.png"
+                                     alt="image"
+                                >
+                            </center>
+                            <label for="name">Image</label>
+                            <input
+                                    type="file"
+                                    accept="image/*"
+                                    class="form-control"
+                                    id="file"
+                                    name="file"
+                                    onchange="showMyImage(this)"
+                            >
                         </div>
                         <div class="form-group">
                             <label for="name">Title</label>
@@ -56,4 +113,31 @@
 </div>
 </body>
 {% include "footer_script.html" %}
+<script>
+
+    $(document).ready(function () {
+        $('#product_table').DataTable();
+    });
+
+    function showMyImage(fileInput) {
+        let files = fileInput.files;
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i];
+            let imageType = /image.*/;
+            if (!file.type.match(imageType)) {
+                continue;
+            }
+            let img = document.getElementById("thumbnil");
+            img.file = file;
+            let reader = new FileReader();
+            reader.onload = (function (aImg) {
+                return function (e) {
+                    aImg.src = e.target.result;
+                };
+            })(img);
+            reader.readAsDataURL(file);
+        }
+    }
+
+</script>
 </html>

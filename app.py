@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for
 import os
+import sqlite3
 
-UPLOAD_FOLDER = 'image'
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER'] = 'static/image'
+
+conn = sqlite3.connect('database.db', check_same_thread=False)
+
 
 product_list = [
     {
@@ -21,8 +24,6 @@ product_list = [
         'image': 'product2.jpg'
     }
 ]
-
-
 @app.route('/')
 @app.route('/home')
 def home():
@@ -102,24 +103,31 @@ def jinja():
 
 @app.get('/add_product')
 def add_product():
-    return render_template('add_product.html')
+    row = conn.execute("""SELECT * FROM product""")
+    product = []
+    for item in row:
+        product.append(
+            {
+                'id': item[0],
+                'title': item[1],
+                'cost': item[2],
+                'price': item[3],
+                'description': item[4],
+            }
+        )
+    return render_template('add_product.html', data=product)
 
 
 @app.post('/submit_new_product')
 def submit_new_product():
     product_id = request.form.get('product_id')
-    file = request.files['file']
     title = request.form.get('title')
     price = request.form.get('price')
     category = request.form.get('category')
     description = request.form.get('description')
-
-    # Option 1
-    # file.save('/image', f.filename)
-    # Option 2
+    file = request.files['file']
     file.save(os.path.join(app.config['UPLOAD_FOLDER'] + '/product', file.filename))
-
-    return redirect(url_for('add_product', name=file.filename))
+    return redirect(url_for('add_product'))
 
 
 if __name__ == '__main__':
