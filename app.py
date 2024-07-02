@@ -7,7 +7,6 @@ app.config['UPLOAD_FOLDER'] = 'static/image'
 
 conn = sqlite3.connect('database.db', check_same_thread=False)
 
-
 product_list = [
     {
         'id': '1',
@@ -24,6 +23,8 @@ product_list = [
         'image': 'product2.jpg'
     }
 ]
+
+
 @app.route('/')
 @app.route('/home')
 def home():
@@ -41,12 +42,24 @@ def home():
             'GPA': '3.0',
         }
     ]
-    return render_template("index.html", student_list=student_list)
+    return render_template("index.html", student_list=student_list, module='home')
 
 
 @app.get('/product')
 def product():
-    return render_template('product.html', product_list=product_list)
+    row = conn.execute("""SELECT * FROM product""")
+    product = []
+    for item in row:
+        product.append(
+            {
+                'id': item[0],
+                'title': item[1],
+                'cost': item[2],
+                'price': item[3],
+                'description': item[4],
+            }
+        )
+    return render_template('product.html', data=product, module='product')
 
 
 @app.get('/product_detail')
@@ -88,34 +101,22 @@ def submit_order():
 
 @app.get('/about')
 def about():
-    return render_template("about.html")
+    return render_template("about.html", module='about')
 
 
 @app.get('/contact')
 def contact():
-    return render_template("contact.html")
+    return render_template("contact.html",  module='contact')
 
 
 @app.get('/jinja')
 def jinja():
-    return render_template('jinja.html')
+    return render_template('jinja.html',  module='jinja')
 
 
 @app.get('/add_product')
 def add_product():
-    row = conn.execute("""SELECT * FROM product""")
-    product = []
-    for item in row:
-        product.append(
-            {
-                'id': item[0],
-                'title': item[1],
-                'cost': item[2],
-                'price': item[3],
-                'description': item[4],
-            }
-        )
-    return render_template('add_product.html', data=product)
+    return render_template('add_product.html',  module='add_product')
 
 
 @app.post('/submit_new_product')

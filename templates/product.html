@@ -11,24 +11,77 @@
         <div class="col-md-12">
             {% include "navbar.html" %}
         </div>
-        {% for item in product_list %}
-            <div
-                    class="col-md-3 col-sm-12 mt-3 mb-3 mr-3 ml-3"
-            >
-                <div class="card" style="width: 18rem;">
-                    <img src="/static/product/{{ item.image }}" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h5 class="card-title" style="text-transform: uppercase">{{  item.title }}</h5>
-                        <p class="card-text">{{ item.description }}</p>
-                        <a target="_blank" href="/product_detail?id={{ item.id }}" class="btn btn-primary">More...</a>
-                    </div>
-                </div>
+        <div class="col-md-12 mt-5">
+            <div class="table-responsive">
+                <table id="product_table" class="display">
+                    <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Cost</th>
+                        <th>Price</th>
+                        <th>Description</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in data %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>
+                                <img
+                                        style="width: 15%;"
+                                        src="/static/image/no-image.png"
+                                >
+                            </td>
+                            <td>{{ item['title'] }}</td>
+                            <td>{{ item['cost'] }}</td>
+                            <td>{{ item['price'] }}</td>
+                            <td>{{ item['description'] }}</td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-outline-primary">
+                                    <i class="far fa-edit"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-outline-danger">
+                                    <i class="far fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        {% endfor %}
-
-
+        </div>
     </div>
 </div>
 </body>
 {% include "footer_script.html" %}
+<script>
+
+    $(document).ready(function () {
+        $('#product_table').DataTable();
+    });
+
+    function showMyImage(fileInput) {
+        let files = fileInput.files;
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i];
+            let imageType = /image.*/;
+            if (!file.type.match(imageType)) {
+                continue;
+            }
+            let img = document.getElementById("thumbnil");
+            img.file = file;
+            let reader = new FileReader();
+            reader.onload = (function (aImg) {
+                return function (e) {
+                    aImg.src = e.target.result;
+                };
+            })(img);
+            reader.readAsDataURL(file);
+        }
+    }
+
+</script>
 </html>
