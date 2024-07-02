@@ -30,10 +30,22 @@
                         <tr>
                             <td>{{ loop.index }}</td>
                             <td>
-                                <img
-                                        style="width: 15%;"
-                                        src="/static/image/no-image.png"
-                                >
+                                {% if item['image'] != 'no_image' %}
+                                    <img
+                                            style="width: 15%;"
+                                            src="/static/image/product/{{ item['image'] }}"
+                                            onerror="this.src='/static/image/image_error.png';"
+                                    >
+
+                                {% endif %}
+
+                                {% if item['image'] == 'no_image' %}
+                                    <img
+                                            style="width: 15%;"
+                                            src="/static/image/no-image.png"
+                                    >
+
+                                {% endif %}
                             </td>
                             <td>{{ item['title'] }}</td>
                             <td>{{ item['cost'] }}</td>

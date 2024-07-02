@@ -50,6 +50,11 @@ def product():
     row = conn.execute("""SELECT * FROM product""")
     product = []
     for item in row:
+        image = ''
+        if item[6] == None:
+            image = 'no_image'
+        else:
+            image = item[6]
         product.append(
             {
                 'id': item[0],
@@ -57,6 +62,7 @@ def product():
                 'cost': item[2],
                 'price': item[3],
                 'description': item[4],
+                'image': image,
             }
         )
     return render_template('product.html', data=product, module='product')
@@ -128,6 +134,9 @@ def submit_new_product():
     description = request.form.get('description')
     file = request.files['file']
     file.save(os.path.join(app.config['UPLOAD_FOLDER'] + '/product', file.filename))
+    res = conn.execute(f"""INSERT INTO `product` VALUES (null, '{title}', '0', {price}, '{category}', '{description}', '{file.filename}')""")
+    conn.commit()
+    print(res)
     return redirect(url_for('add_product'))
 
 
