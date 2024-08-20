@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Raw JS</title>
+</head>
+<body>
+<div id="app">
+    <center>
+        <h1 class="" id="txt">Calculator</h1>
+        <label for="value_a">Value A</label>
+        <input v-model="value_a" id="value_a" type="text">
+        <br>
+        <br>
+        <label for="value_a">Value B</label>
+        <input v-model="value_b" id="value_a" type="text">
+        <br>
+        <br>
+        <button @click="sum()">Sum</button>
+        <button @click="minus()">Minus</button>
+        <button @click="multiply()">Multiply</button>
+        <button @click="division()">Division</button>
+        <br>
+        <br>
+        <h3 :style="color">Result: A {{ operator }} B = {{ result }}</h3>
+    </center>
+</div>
+</body>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script>
+    const {createApp} = Vue
+
+    createApp({
+        data() {
+            return {
+                value_a: 0,
+                value_b: 0,
+                result: 110,
+                operator: '+',
+                color: "color: red"
+            }
+        },
+        methods: {
+            sum() {
+                this.color = "color: green"
+                this.operator = "+"
+                this.result = parseFloat(this.value_a) + parseFloat(this.value_b)
+            },
+            minus() {
+                this.color = "color: yellow"
+                this.operator = "-"
+                this.result = parseFloat(this.value_a) - parseFloat(this.value_b)
+            },
+            multiply() {
+                this.color = "color: blue"
+                this.operator = "x"
+                this.result = parseFloat(this.value_a) * parseFloat(this.value_b)
+            },
+            division() {
+                this.color = "color: hotpink"
+                this.operator = "/"
+                this.result = parseFloat(this.value_a) / parseFloat(this.value_b)
+            }
+        }
+    }).mount('#app')
+</script>
+</html>
