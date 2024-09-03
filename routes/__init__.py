@@ -1,1 +1,1 @@
-from routes.home import *
+from routes.dashboard import *

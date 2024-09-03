@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Raw JS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+          integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+</head>
+<body>
+<div id="app" class="container">
+    <div class="row">
+        <div class="col-4 mt-4">
+            <div class="card" style="box-shadow: 2px 3px 5px gray;">
+                <div class="card-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input v-model="form.name" type="text" class="form-control" id="name">
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Gender</label>
+                            <select v-model="form.gender" class="form-control" id="name">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input v-model="form.phone" type="text" class="form-control" id="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input v-model="form.email" type="email" class="form-control" id="email">
+                        </div>
+                        <button
+                                v-if="status == 'add'"
+                                type="button"
+                                class="btn btn-primary float-right"
+                                @click="onSave()"
+                        >Save
+                        </button>
+                        <button
+                                v-if="status == 'edit'"
+                                type="button"
+                                class="btn btn-secondary float-right"
+                                @click="onEdit()"
+                        >Edit
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-8 mt-4">
+            <div class="card" style="box-shadow: 2px 3px 5px gray;">
+                <div class="card-body">
+                    <table class="table table-striped table-border">
+                        <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Name</th>
+                            <th>Gender</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr
+                                v-for="(item, index) in student_list"
+                                :key="'list_'+index"
+                        >
+                            <td>{{ index + 1 }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.gender }}</td>
+                            <td>{{ item.phone }}</td>
+                            <td>{{ item.email }}</td>
+                            <td>
+                                <input @click="deleteRecord(index)" type="button" class="btn btn-outline-danger"
+                                       value="delete">
+                                <input
+                                        type="button"
+                                        class="btn btn-outline-warning"
+                                        value="edit"
+                                        @click="getEdit(item)"
+                                >
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const {createApp} = Vue
+
+    createApp({
+        created() {
+        },
+        data() {
+            return {
+                form: {
+                    id: null,
+                    name: null,
+                    gender: 'male',
+                    phone: '855-',
+                    email: '@mail.com',
+                },
+                student_list: [],
+                status: 'add'
+            }
+        },
+        methods: {
+            onSave() {
+                if (this.form.name == null || this.form.name == '') {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "🥴 Oops...",
+                        text: "Please Enter Name Field !",
+                        footer: '<a href="#">Why do I have this issue?</a>'
+                    });
+                    return
+                }
+
+                let form = this.form
+                let id = Math.floor(Math.random() * 100) + '-' + Math.floor(Math.random() * 100)
+                this.student_list.push(
+                    {
+                        id: id,
+                        name: form.name,
+                        gender: form.gender,
+                        phone: form.phone,
+                        email: form.email,
+                    }
+                )
+                this.clearForm()
+            },
+            deleteRecord(index) {
+                let student_list = this.student_list
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        student_list.splice(index, 1)
+                    }
+                });
+            },
+            getEdit(item) {
+                this.form.id = item.id
+                this.form.name = item.name
+                this.form.gender = item.gender
+                this.form.phone = item.phone
+                this.form.email = item.email
+                this.status = 'edit'
+            },
+            onEdit() {
+                let current_id = this.form.id
+                let current_student = this.student_list.find(obj => {
+                    return obj.id == current_id
+                })
+                current_student.name = this.form.name
+                current_student.gender = this.form.gender
+                current_student.phone = this.form.phone
+                current_student.email = this.form.email
+
+                this.clearForm()
+            },
+            clearForm() {
+                this.form.id = null
+                this.form.name = null
+                this.form.gender = 'male'
+                this.form.phone = '855-'
+                this.form.email = '@mail.com'
+                this.status = 'add'
+            },
+        }
+    }).mount('#app')
+</script>
+</html>

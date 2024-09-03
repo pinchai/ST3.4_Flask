@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Raw JS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+          integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+
+</head>
+<body>
+<div id="app">
+    <center>
+        <input type="button" value="Fetch Data From API" @click="fetchData()">
+        <br>
+        <br>
+    </center>
+    <div class="container">
+        <div class="row">
+            <div
+                    class="col-md-3"
+                    v-for="(item, index) in product_list"
+                    :key="'a'+index"
+            >
+                <div class="card" style="width: 100%; margin-top: 10px">
+                    <img
+                            :src="item.image"
+                            class="card-img-top"
+                            alt="..."
+                            style="width: 100px; height: 100px"
+                    >
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.title }}</h5>
+                        <h5 class="card-title">{{ item.price }}</h5>
+                        <div style="height: 100px; overflow: scroll">
+                            <p class="card-text">
+                                {{ item.description }}
+                            </p>
+                        </div>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
+<script>
+    const {createApp} = Vue
+    createApp({
+        created() {
+            this.fetchData()
+        },
+        data() {
+            return {
+                product_list: [],
+            }
+        },
+        methods: {
+            fetchData() {
+                let vm = this
+                let api_url = "https://fakestoreapi.com/products"
+                $.LoadingOverlay("show");
+                axios.get(api_url)
+                    .then(function (response) {
+                        // handle success
+                        vm.product_list = response.data
+                        $.LoadingOverlay("hide");
+                        //console.log(response.data);
+                    })
+                    .catch(function (error) {
+                        // handle error
+                        console.log(error);
+                    })
+            }
+        }
+    }).mount('#app')
+</script>
+</html>

@@ -25,6 +25,8 @@ product_list = [
 ]
 
 
+import routes
+
 @app.route('/')
 @app.route('/home')
 def home():
