@@ -3,4 +3,5 @@ from app import app, render_template
 
 @app.route('/admin')
 def admin():
-    return render_template("admin/starter.html")
+    module = 'dashboard'
+    return render_template("admin/dashboard.html", module=module)

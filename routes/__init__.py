@@ -1,1 +1,2 @@
-from routes.dashboard import *
+from routes import dashboard
+from routes import user
