@@ -2,7 +2,91 @@
 
 {% block main_content %}
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
+    <div id="app" class="content-wrapper">
+        <!-- Modal -->
+        <div
+                class="modal fade"
+                id="modal"
+                data-backdrop="static"
+                data-keyboard="false"
+                tabindex="-1"
+                aria-labelledby="staticBackdropLabel"
+                aria-hidden="true"
+        >
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Add New User</h5>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            {# Name#}
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input v-model="form.name" type="text" class="form-control" id="name">
+                            </div>
+                            {# Gender#}
+                            <div class="form-group">
+                                <label for="name">Gender</label>
+                                <select v-model="form.gender" class="form-control" id="name">
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                            {# Phone#}
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input v-model="form.phone" type="text" class="form-control" id="phone">
+                            </div>
+                            {# Email#}
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input v-model="form.email" type="email" class="form-control" id="email">
+                            </div>
+                            {# Role#}
+                            <div class="form-group">
+                                <label for="name">Role</label>
+                                <select v-model="form.role" class="form-control" id="name">
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            {# Address#}
+                            <div class="form-group">
+                                <label for="name">Address</label>
+                                <textarea
+                                        v-model="form.address"
+                                        rows="5"
+                                        class="form-control"
+                                ></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                                type="button"
+                                class="btn btn-danger"
+                                @click="closeModal()"
+                        >Close
+                        </button>
+                        <button
+                                v-if="status == 'add'"
+                                @click="onSave()"
+                                type="button"
+                                class="btn btn-primary"
+                        >Save
+                        </button>
+                        <button
+                                v-if="status == 'edit'"
+                                @click="onSave()"
+                                type="button"
+                                class="btn btn-primary"
+                        >Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Content Header (Page header) -->
         <div class="content-header">
             <div class="container-fluid">
@@ -28,7 +112,10 @@
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-header">
-                                <button class="btn btn-outline-primary">
+                                <button
+                                        @click="openModal()"
+                                        class="btn btn-outline-primary"
+                                >
                                     <i class="fas fa-plus-circle"></i>
                                     Add
                                 </button>
@@ -46,21 +133,33 @@
                                             <th>Email</th>
                                             <th>Phone</th>
                                             <th>Address</th>
+                                            <th>Action</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {% for item in range(10) %}
-                                            <tr>
-                                                <td>{{ item + 1 }}</td>
-                                                <td>Profile</td>
-                                                <td>Name</td>
-                                                <td>Gender</td>
-                                                <td>Role</td>
-                                                <td>Email</td>
-                                                <td>Phone</td>
-                                                <td>Address</td>
-                                            </tr>
-                                        {% endfor %}
+                                        <tr v-for="(item, index) in user_list"
+                                            :key="'user_list_'+index"
+                                        >
+                                            <td>[[ index + 1 ]]</td>
+                                            <td>[[ 'iamge' ]]</td>
+                                            <td>[[ item.name ]]</td>
+                                            <td>[[ item.gender ]]</td>
+                                            <td>[[ item.role ]]</td>
+                                            <td>[[ item.email ]]</td>
+                                            <td>[[ item.phone ]]</td>
+                                            <td>[[ item.address ]]</td>
+                                            <td>
+                                                <button
+                                                        class="btn btn-sm btn-outline-secondary"
+                                                        @click="getEdit(item)"
+                                                >
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -74,4 +173,67 @@
         <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block script %}
+    <script>
+        const {createApp} = Vue
+        createApp({
+            delimiters: ['[[', ']]'],
+            created() {
+                //this.openModal()
+            },
+            mounted() {
+                //this.openModal()
+            },
+            data() {
+                return {
+                    form: {
+                        id: null,
+                        name: null,
+                        gender: 'male',
+                        phone: '855-',
+                        email: '@mail.com',
+                        role: 'user',
+                        address: 'PhnomPenh',
+                    },
+                    user_list: [
+                        {
+                            'id': 1,
+                            'name': 'dara',
+                            'gender': 'male',
+                            'phone': '855-98346',
+                            'email': 'dara@mail.com',
+                            'role': 'user',
+                            'address': 'SR',
+                        }
+                    ],
+                    status: 'add'
+                }
+            },
+            methods: {
+                openModal() {
+                    $('#modal').modal('show')
+                },
+                closeModal() {
+                     this.status = 'add'
+                    $('#modal').modal('hide')
+                },
+                onSave() {
+                    alert('save')
+                },
+                getEdit(item) {
+                    this.status = 'edit'
+                    this.form.id = item.id
+                    this.form.name = item.name
+                    this.form.gender = item.gender
+                    this.form.phone = item.phone
+                    this.form.email = item.email
+                    this.form.address = item.address
+                    this.form.role = item.role
+                    this.openModal()
+                }
+            }
+        }).mount('#app')
+    </script>
 {% endblock %}
