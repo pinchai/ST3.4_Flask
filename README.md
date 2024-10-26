@@ -4,7 +4,10 @@ flask run
 flask run --debug
 flask run --debug --host=0.0.0.0 --port=5050
 ```
-
+```
+pip3 freeze > requirements.txt  # Python3
+pip freeze > requirements.txt  # Python2
+```
 ## VENV
 
 **_macOS_**
