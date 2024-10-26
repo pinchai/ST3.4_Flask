@@ -1,4 +1,4 @@
-from app import app, render_template
+from app import app, render_template, request
 from helpers import db_config
 from sqlalchemy import text
 
@@ -29,3 +29,33 @@ def getUser():
         )
 
     return user_list
+
+
+@app.post('/admin/create-user')
+def createUser():
+    json_data = request.get_json()
+    name = json_data['name']
+    gender = json_data['gender']
+    phone = json_data['phone']
+    email = json_data['email']
+    role = json_data['role']
+    address = json_data['address']
+    cnn = db_config.connection()
+    result = cnn.execute(text(f"""
+        INSERT INTO `user`
+        VALUES
+            (
+                NULL,
+                '{name}',
+                '{gender}',
+                '{phone}',
+                '{email}',
+                '{role}',
+                '{address}'
+            )
+	"""))
+    cnn.commit()
+
+
+
+    return f"{result}"

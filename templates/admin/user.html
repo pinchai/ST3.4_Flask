@@ -237,7 +237,19 @@
                     $('#modal').modal('hide')
                 },
                 onSave() {
-                    console.log(this.form)
+                    let vm = this
+                    let api_url = "http://127.0.0.1:5000/admin/create-user"
+                    $.LoadingOverlay("show");
+                    axios.post(api_url, vm.form)
+                        .then(function (response) {
+                            vm.fetchData()
+                            vm.clearForm()
+                            $.LoadingOverlay("hide");
+                        })
+                        .catch(function (error) {
+                            // handle error
+                            console.log(error);
+                        })
                 },
                 getEdit(item) {
                     this.status = 'edit'
@@ -264,6 +276,19 @@
                             alert('deleted !!')
                         }
                     });
+                },
+                clearForm() {
+                    this.form.id = null
+                    this.form.name = null
+                    this.form.gender = 'male'
+                    this.form.phone = '855-'
+                    this.form.email = '@mail.com'
+                    this.form.role = '@mail.com'
+                    this.form.address = '@mail.com'
+                    this.form.address = '@mail.com'
+                    this.status = 'add'
+
+                    this.closeModal()
                 },
             }
         }).mount('#app')
