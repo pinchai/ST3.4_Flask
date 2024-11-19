@@ -1,0 +1,272 @@
+{% extends "admin/layout.html" %}
+
+{% block main_content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div id="app" class="content-wrapper">
+        <!-- Modal -->
+        <div
+                class="modal fade"
+                id="modal"
+                data-backdrop="static"
+                data-keyboard="false"
+                tabindex="-1"
+                aria-labelledby="staticBackdropLabel"
+                aria-hidden="true"
+        >
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Add New Category</h5>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            {# Name#}
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input v-model="form.name" type="text" class="form-control" id="name">
+                            </div>
+                            {# Address#}
+                            <div class="form-group">
+                                <label for="name">Description</label>
+                                <textarea
+                                        v-model="form.description"
+                                        rows="5"
+                                        class="form-control"
+                                ></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                                type="button"
+                                class="btn btn-danger"
+                                @click="closeModal()"
+                        >Close
+                        </button>
+                        <button
+                                v-if="status == 'add'"
+                                @click="onSave()"
+                                type="button"
+                                class="btn btn-primary"
+                        >Save
+                        </button>
+                        <button
+                                v-if="status == 'edit'"
+                                @click="edit()"
+                                type="button"
+                                class="btn btn-primary"
+                        >Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">Category Page</h1>
+                    </div><!-- /.col -->
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+                            <li class="breadcrumb-item active">Category Page</li>
+                        </ol>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </div>
+        <!-- /.content-header -->
+
+        <!-- Main content -->
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <button
+                                        @click="fetchData()"
+                                        class="btn btn-outline-secondary mr-4"
+                                >
+                                    <i class="fas fa-sync"></i>
+                                    Refresh
+                                </button>
+                                <button
+                                        @click="openModal()"
+                                        class="btn btn-outline-primary"
+                                >
+                                    <i class="fas fa-plus-circle"></i>
+                                    Add
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                        <tr class="bg-primary">
+                                            <th>No.</th>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            <th>Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr v-for="(item, index) in category_list"
+                                            :key="'category_list_'+index"
+                                        >
+                                            <td>[[ index + 1 ]]</td>
+                                            <td>[[ item.name ]]</td>
+                                            <td>[[ item.description ]]</td>
+                                            <td>
+                                                <button
+                                                        class="btn btn-sm btn-outline-secondary mr-2"
+                                                        @click="getEdit(item)"
+                                                >
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        @click="deleteRecord(item.id)"
+                                                >
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+            </div>
+        </div>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block script %}
+    <script>
+        const {createApp} = Vue
+        createApp({
+            delimiters: ['[[', ']]'],
+            created() {
+                //this.openModal()
+            },
+            mounted() {
+                this.fetchData()
+            },
+            data() {
+                return {
+                    form: {
+                        id: null,
+                        name: null,
+                        description: null,
+                    },
+                    category_list: [],
+                    status: 'add'
+                }
+            },
+            methods: {
+                fetchData() {
+                    let vm = this
+                    let api_url = "http://127.0.0.1:5000/admin/get-category"
+                    $.LoadingOverlay("show");
+                    axios.get(api_url)
+                        .then(function (response) {
+                            vm.category_list = response.data
+                            $.LoadingOverlay("hide");
+                        })
+                        .catch(function (error) {
+                            // handle error
+                            console.log(error);
+                        })
+                },
+                openModal() {
+                    $('#modal').modal('show')
+                },
+                closeModal() {
+                    this.status = 'add'
+                    $('#modal').modal('hide')
+                },
+                onSave() {
+                    let vm = this
+                    let api_url = "http://127.0.0.1:5000/admin/create-category"
+                    $.LoadingOverlay("show");
+                    axios.post(api_url, vm.form)
+                        .then(function (response) {
+                            vm.fetchData()
+                            vm.clearForm()
+                            $.LoadingOverlay("hide");
+                        })
+                        .catch(function (error) {
+                            // handle error
+                            console.log(error);
+                        })
+                },
+                getEdit(item) {
+                    this.status = 'edit'
+                    this.form.id = item.id
+                    this.form.name = item.name
+                    this.form.description = item.description
+                    this.openModal()
+                },
+                edit() {
+                    let vm = this
+                    let api_url = "http://127.0.0.1:5000/admin/update-category"
+                    $.LoadingOverlay("show");
+                    axios.post(api_url, vm.form)
+                        .then(function (response) {
+                            vm.fetchData()
+                            vm.clearForm()
+                            $.LoadingOverlay("hide");
+                        })
+                        .catch(function (error) {
+                            // handle error
+                            console.log(error);
+                        })
+                },
+                deleteRecord(category_id) {
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "You won't be able to revert this!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, delete it!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            let vm = this
+                            let api_url = "http://127.0.0.1:5000/admin/delete-category"
+                            $.LoadingOverlay("show");
+                            axios.post(api_url, {category_id: category_id})
+                                .then(function (response) {
+                                    vm.fetchData()
+                                    $.LoadingOverlay("hide");
+                                })
+                                .catch(function (error) {
+                                    // handle error
+                                    $.LoadingOverlay("hide");
+                                    console.log(error);
+                                })
+                        }
+                    });
+                },
+                clearForm() {
+                    this.form.id = null
+                    this.form.name = null
+                    this.form.description = null
+                    this.status = 'add'
+
+                    this.closeModal()
+                },
+            }
+        }).mount('#app')
+    </script>
+{% endblock %}
