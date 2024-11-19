@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue CDN + Cropper.js Example with File Input</title>
+    <!-- Vue.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
+
+    <!-- Cropper.js JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <style>
+        #image {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+<center>
+    <div id="app">
+    <h1>Vue + Cropper.js with File Input</h1>
+
+    <!-- File Input -->
+    <input type="file" @change="onFileChange" accept="image/*"/>
+
+    <!-- Image Preview Area -->
+    <div v-if="imageUrl" style="width: 500px; height: 500px">
+        <img id="image" :src="imageUrl" alt="Source Image"/>
+    </div>
+
+    <!-- Crop Button -->
+    <button v-if="imageUrl" @click="cropImage">Crop Image</button>
+
+    <!-- Cropped Image Preview -->
+    <h2>Cropped Image:</h2>
+    <img v-if="croppedImage" :src="croppedImage" alt="Cropped Image"/>
+
+</div>
+</center>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            imageUrl: null,
+            croppedImage: null,
+            cropper: null
+        },
+        methods: {
+            onFileChange(e) {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    this.loadImage(file);
+                }
+            },
+            loadImage(file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    this.imageUrl = event.target.result;
+
+                    // Ensure Cropper.js is re-initialized when a new image is loaded
+                    this.$nextTick(() => {
+                        const image = document.getElementById('image');
+                        if (this.cropper) {
+                            this.cropper.destroy(); // Destroy previous cropper instance
+                        }
+                        this.cropper = new Cropper(image, {
+                            aspectRatio: 1 / 1.5, // Set your desired aspect ratio
+                            viewMode: 1
+                        });
+                    });
+                };
+                reader.readAsDataURL(file);
+            },
+            cropImage() {
+                if (this.cropper) {
+                    const canvas = this.cropper.getCroppedCanvas();
+                    this.croppedImage = canvas.toDataURL('image/png');
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

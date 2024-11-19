@@ -55,7 +55,40 @@ def createUser():
             )
 	"""))
     cnn.commit()
-
-
-
     return f"{result}"
+
+
+@app.post('/admin/update-user')
+def updateUser():
+    json_data = request.get_json()
+    user_id = json_data['id']
+    name = json_data['name']
+    gender = json_data['gender']
+    phone = json_data['phone']
+    email = json_data['email']
+    role = json_data['role']
+    address = json_data['address']
+    cnn = db_config.connection()
+    result = cnn.execute(text(f"""
+    UPDATE `user` 
+    SET `name` = '{name}',
+    gender = '{gender}',
+    phone = '{phone}',
+    email = '{email}',
+    role = '{role}',
+    address = '{address}' 
+    WHERE
+        `id` = '{user_id}'
+	"""))
+    cnn.commit()
+    return f"{result}"
+
+@app.post('/admin/delete-user')
+def deleteUser():
+    json_data = request.get_json()
+    user_id = json_data['user_id']
+    cnn = db_config.connection()
+    result = cnn.execute(text(f"""DELETE FROM `user` WHERE `id` = {user_id}"""))
+    cnn.commit()
+    return f"{result}"
+

@@ -78,7 +78,7 @@
                         </button>
                         <button
                                 v-if="status == 'edit'"
-                                @click="onSave()"
+                                @click="edit()"
                                 type="button"
                                 class="btn btn-primary"
                         >Update
@@ -167,7 +167,7 @@
                                                 </button>
                                                 <button
                                                         class="btn btn-sm btn-outline-danger"
-                                                        @click="deleteRecord(1)"
+                                                        @click="deleteRecord(item.id)"
                                                 >
                                                     <i class="fas fa-trash"></i>
                                                 </button>
@@ -262,7 +262,22 @@
                     this.form.role = item.role
                     this.openModal()
                 },
-                deleteRecord(index) {
+                edit() {
+                    let vm = this
+                    let api_url = "http://127.0.0.1:5000/admin/update-user"
+                    $.LoadingOverlay("show");
+                    axios.post(api_url, vm.form)
+                        .then(function (response) {
+                            vm.fetchData()
+                            vm.clearForm()
+                            $.LoadingOverlay("hide");
+                        })
+                        .catch(function (error) {
+                            // handle error
+                            console.log(error);
+                        })
+                },
+                deleteRecord(user_id) {
                     Swal.fire({
                         title: "Are you sure?",
                         text: "You won't be able to revert this!",
@@ -273,7 +288,19 @@
                         confirmButtonText: "Yes, delete it!"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            alert('deleted !!')
+                            let vm = this
+                            let api_url = "http://127.0.0.1:5000/admin/delete-user"
+                            $.LoadingOverlay("show");
+                            axios.post(api_url, {user_id: user_id})
+                                .then(function (response) {
+                                    vm.fetchData()
+                                    $.LoadingOverlay("hide");
+                                })
+                                .catch(function (error) {
+                                    // handle error
+                                    $.LoadingOverlay("hide");
+                                    console.log(error);
+                                })
                         }
                     });
                 },
