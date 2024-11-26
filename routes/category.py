@@ -11,19 +11,7 @@ def category():
 
 @app.get('/admin/get-category')
 def getCategory():
-    # Test the connection
-    result = db_config.connection().execute(text("SELECT * FROM category"))
-    data = result.fetchall()
-    category_list = []
-    for item in data:
-        category_list.append(
-            {
-                'id': item[0],
-                'name': item[1],
-                'description': item[2],
-            }
-        )
-
+    category_list = getCategoryList()
     return category_list
 
 
@@ -72,4 +60,21 @@ def deleteCategory():
     result = cnn.execute(text(f"""DELETE FROM `category` WHERE `id` = {category_id}"""))
     cnn.commit()
     return f"{result}"
+
+
+def getCategoryList():
+    # Test the connection
+    result = db_config.connection().execute(text("SELECT * FROM category"))
+    data = result.fetchall()
+    category_list = []
+    for item in data:
+        category_list.append(
+            {
+                'id': item[0],
+                'name': item[1],
+                'description': item[2],
+            }
+        )
+
+    return category_list
 

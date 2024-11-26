@@ -16,7 +16,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Add New Category</h5>
+                        <h5 class="modal-title" id="staticBackdropLabel">Add New Product</h5>
                     </div>
                     <div class="modal-body">
                         <form>
@@ -25,7 +25,32 @@
                                 <label for="name">Name</label>
                                 <input v-model="form.name" type="text" class="form-control" id="name">
                             </div>
-                            {# Address#}
+                            {# Category#}
+                            <div class="form-group">
+                                <label for="name">Category</label>
+                                <select
+                                        v-model="form.category_id" type="text" class="form-control"
+                                >
+                                    <option :value="null" disabled>--select category--</option>
+                                    <option
+                                            v-for="(item, index) in category_list"
+                                            :key="'category_list_'+index"
+                                            :value="item.id"
+                                    >[[ item.name ]]
+                                    </option>
+                                </select>
+                            </div>
+                            {# Cost#}
+                            <div class="form-group">
+                                <label for="name">Cost</label>
+                                <input v-model="form.cost" type="number" class="form-control">
+                            </div>
+                            {# Price#}
+                            <div class="form-group">
+                                <label for="name">Price</label>
+                                <input v-model="form.price" type="number" class="form-control">
+                            </div>
+                            {# Description#}
                             <div class="form-group">
                                 <label for="name">Description</label>
                                 <textarea
@@ -67,12 +92,12 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Category Page</h1>
+                        <h1 class="m-0">Product Page</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="/admin">Home</a></li>
-                            <li class="breadcrumb-item active">Category Page</li>
+                            <li class="breadcrumb-item active">Product Page</li>
                         </ol>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
@@ -109,16 +134,22 @@
                                         <tr class="bg-primary">
                                             <th>No.</th>
                                             <th>Name</th>
+                                            <th>Cost</th>
+                                            <th>Price</th>
+                                            <th>Category</th>
                                             <th>Description</th>
                                             <th>Action</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr v-for="(item, index) in category_list"
-                                            :key="'category_list_'+index"
+                                        <tr v-for="(item, index) in product_list"
+                                            :key="'product_list_'+index"
                                         >
                                             <td>[[ index + 1 ]]</td>
                                             <td>[[ item.name ]]</td>
+                                            <td>[[ item.cost ]]</td>
+                                            <td>[[ item.price ]]</td>
+                                            <td>[[ item.category_name ]]</td>
                                             <td>[[ item.description ]]</td>
                                             <td>
                                                 <button
@@ -166,8 +197,12 @@
                     form: {
                         id: null,
                         name: null,
+                        cost: 0,
+                        price: 0,
+                        category_id: null,
                         description: null,
                     },
+                    product_list: [],
                     category_list: [],
                     status: 'add'
                 }
@@ -175,11 +210,12 @@
             methods: {
                 fetchData() {
                     let vm = this
-                    let api_url = "http://127.0.0.1:5050/admin/get-category"
+                    let api_url = "http://127.0.0.1:5050/admin/get-product"
                     $.LoadingOverlay("show");
                     axios.get(api_url)
                         .then(function (response) {
-                            vm.category_list = response.data
+                            vm.product_list = response.data.product_list
+                            vm.category_list = response.data.category_list
                             $.LoadingOverlay("hide");
                         })
                         .catch(function (error) {
@@ -196,7 +232,7 @@
                 },
                 onSave() {
                     let vm = this
-                    let api_url = "http://127.0.0.1:5050/admin/create-category"
+                    let api_url = "http://127.0.0.1:5050/admin/create-product"
                     $.LoadingOverlay("show");
                     axios.post(api_url, vm.form)
                         .then(function (response) {
@@ -213,12 +249,15 @@
                     this.status = 'edit'
                     this.form.id = item.id
                     this.form.name = item.name
+                    this.form.cost = item.cost
+                    this.form.price = item.price
+                    this.form.category_id = item.category_id
                     this.form.description = item.description
                     this.openModal()
                 },
                 edit() {
                     let vm = this
-                    let api_url = "http://127.0.0.1:5050/admin/update-category"
+                    let api_url = "http://127.0.0.1:5050/admin/update-product"
                     $.LoadingOverlay("show");
                     axios.post(api_url, vm.form)
                         .then(function (response) {
@@ -231,7 +270,7 @@
                             console.log(error);
                         })
                 },
-                deleteRecord(category_id) {
+                deleteRecord(product_id) {
                     Swal.fire({
                         title: "Are you sure?",
                         text: "You won't be able to revert this!",
@@ -243,9 +282,9 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             let vm = this
-                            let api_url = "http://127.0.0.1:5050/admin/delete-category"
+                            let api_url = "http://127.0.0.1:5050/admin/delete-product"
                             $.LoadingOverlay("show");
-                            axios.post(api_url, {category_id: category_id})
+                            axios.post(api_url, {product_id: product_id})
                                 .then(function (response) {
                                     vm.fetchData()
                                     $.LoadingOverlay("hide");

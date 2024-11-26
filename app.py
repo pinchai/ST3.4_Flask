@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, \
+    request, redirect, url_for, jsonify
 import os
 import sqlite3
 
@@ -46,101 +47,6 @@ def home():
         }
     ]
     return render_template("index.html", student_list=student_list, module='home')
-
-
-@app.get('/product')
-def product():
-    row = conn.execute("""SELECT * FROM product""")
-    product = []
-    for item in row:
-        image = ''
-        if item[6] == None:
-            image = 'no_image'
-        else:
-            image = item[6]
-        product.append(
-            {
-                'id': item[0],
-                'title': item[1],
-                'cost': item[2],
-                'price': item[3],
-                'description': item[4],
-                'image': image,
-            }
-        )
-    return render_template('product.html', data=product, module='product')
-
-
-@app.get('/product_detail')
-def product_detail():
-    product_id = request.args.get('id')
-    current_product = []
-    for item in product_list:
-        if item['id'] == product_id:
-            current_product = item
-
-    return render_template('product_detail.html', current_product=current_product)
-
-
-@app.get('/checkout')
-def checkout():
-    product_id = request.args.get('id')
-    current_product = []
-    for item in product_list:
-        if item['id'] == product_id:
-            current_product = item
-
-    return render_template('checkout.html', current_product=current_product)
-
-
-@app.post('/submit_order')
-def submit_order():
-    product_id = request.form.get('product_id')
-    current_product = []
-    for item in product_list:
-        if item['id'] == product_id:
-            current_product = item
-
-    name = request.form.get('fullname')
-    phone = request.form.get('phone')
-    email = request.form.get('email')
-
-    return current_product
-
-
-@app.get('/about')
-def about():
-    return render_template("about.html", module='about')
-
-
-@app.get('/contact')
-def contact():
-    return render_template("contact.html",  module='contact')
-
-
-@app.get('/jinja')
-def jinja():
-    return render_template('jinja.html',  module='jinja')
-
-
-@app.get('/add_product')
-def add_product():
-    return render_template('add_product.html',  module='add_product')
-
-
-@app.post('/submit_new_product')
-def submit_new_product():
-    product_id = request.form.get('product_id')
-    title = request.form.get('title')
-    price = request.form.get('price')
-    category = request.form.get('category')
-    description = request.form.get('description')
-    file = request.files['file']
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'] + '/product', file.filename))
-    res = conn.execute(f"""INSERT INTO `product` VALUES (null, '{title}', '0', {price}, '{category}', '{description}', '{file.filename}')""")
-    conn.commit()
-    print(res)
-    return redirect(url_for('add_product'))
 
 
 if __name__ == '__main__':

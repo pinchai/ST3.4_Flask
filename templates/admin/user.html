@@ -217,7 +217,7 @@
             methods: {
                 fetchData() {
                     let vm = this
-                    let api_url = "http://127.0.0.1:5000/admin/get-user"
+                    let api_url = "http://127.0.0.1:5050/admin/get-user"
                     $.LoadingOverlay("show");
                     axios.get(api_url)
                         .then(function (response) {
@@ -238,7 +238,7 @@
                 },
                 onSave() {
                     let vm = this
-                    let api_url = "http://127.0.0.1:5000/admin/create-user"
+                    let api_url = "http://127.0.0.1:5050/admin/create-user"
                     $.LoadingOverlay("show");
                     axios.post(api_url, vm.form)
                         .then(function (response) {
@@ -264,7 +264,7 @@
                 },
                 edit() {
                     let vm = this
-                    let api_url = "http://127.0.0.1:5000/admin/update-user"
+                    let api_url = "http://127.0.0.1:5050/admin/update-user"
                     $.LoadingOverlay("show");
                     axios.post(api_url, vm.form)
                         .then(function (response) {
@@ -289,7 +289,7 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             let vm = this
-                            let api_url = "http://127.0.0.1:5000/admin/delete-user"
+                            let api_url = "http://127.0.0.1:5050/admin/delete-user"
                             $.LoadingOverlay("show");
                             axios.post(api_url, {user_id: user_id})
                                 .then(function (response) {

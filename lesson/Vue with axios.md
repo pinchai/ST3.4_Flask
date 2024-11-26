@@ -8,7 +8,7 @@ https://axios-http.com/docs/intro
 
 #Add to vue instan
 mounted() {
-    axios.get('http://127.0.0.1:5000/get_all_product')
+    axios.get('http://127.0.0.1:5050/get_all_product')
     .then(response => {
         this.product_list = response.data
         $.LoadingOverlay("hide");
