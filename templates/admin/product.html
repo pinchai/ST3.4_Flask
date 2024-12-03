@@ -210,7 +210,7 @@
             methods: {
                 fetchData() {
                     let vm = this
-                    let api_url = "http://127.0.0.1:5050/admin/get-product"
+                    let api_url = "http://127.0.0.1:5000/admin/get-product"
                     $.LoadingOverlay("show");
                     axios.get(api_url)
                         .then(function (response) {
@@ -232,7 +232,7 @@
                 },
                 onSave() {
                     let vm = this
-                    let api_url = "http://127.0.0.1:5050/admin/create-product"
+                    let api_url = "http://127.0.0.1:5000/admin/create-product"
                     $.LoadingOverlay("show");
                     axios.post(api_url, vm.form)
                         .then(function (response) {
@@ -257,7 +257,7 @@
                 },
                 edit() {
                     let vm = this
-                    let api_url = "http://127.0.0.1:5050/admin/update-product"
+                    let api_url = "http://127.0.0.1:5000/admin/update-product"
                     $.LoadingOverlay("show");
                     axios.post(api_url, vm.form)
                         .then(function (response) {
@@ -282,7 +282,7 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             let vm = this
-                            let api_url = "http://127.0.0.1:5050/admin/delete-product"
+                            let api_url = "http://127.0.0.1:5000/admin/delete-product"
                             $.LoadingOverlay("show");
                             axios.post(api_url, {product_id: product_id})
                                 .then(function (response) {

@@ -175,7 +175,7 @@
             methods: {
                 fetchData() {
                     let vm = this
-                    let api_url = "http://127.0.0.1:5050/admin/get-category"
+                    let api_url = "http://127.0.0.1:5000/admin/get-category"
                     $.LoadingOverlay("show");
                     axios.get(api_url)
                         .then(function (response) {
@@ -196,7 +196,7 @@
                 },
                 onSave() {
                     let vm = this
-                    let api_url = "http://127.0.0.1:5050/admin/create-category"
+                    let api_url = "http://127.0.0.1:5000/admin/create-category"
                     $.LoadingOverlay("show");
                     axios.post(api_url, vm.form)
                         .then(function (response) {
@@ -218,7 +218,7 @@
                 },
                 edit() {
                     let vm = this
-                    let api_url = "http://127.0.0.1:5050/admin/update-category"
+                    let api_url = "http://127.0.0.1:5000/admin/update-category"
                     $.LoadingOverlay("show");
                     axios.post(api_url, vm.form)
                         .then(function (response) {
@@ -243,7 +243,7 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             let vm = this
-                            let api_url = "http://127.0.0.1:5050/admin/delete-category"
+                            let api_url = "http://127.0.0.1:5000/admin/delete-category"
                             $.LoadingOverlay("show");
                             axios.post(api_url, {category_id: category_id})
                                 .then(function (response) {
