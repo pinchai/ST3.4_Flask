@@ -31,6 +31,7 @@ def createCategory():
             )
 	"""))
     cnn.commit()
+    cnn.close()
     return f"{result}"
 
 
@@ -50,6 +51,7 @@ def updateCategory():
         `id` = '{category_id}'
 	"""))
     cnn.commit()
+    cnn.close()
     return f"{result}"
 
 @app.post('/admin/delete-category')
@@ -59,13 +61,16 @@ def deleteCategory():
     cnn = db_config.connection()
     result = cnn.execute(text(f"""DELETE FROM `category` WHERE `id` = {category_id}"""))
     cnn.commit()
+    cnn.close()
     return f"{result}"
 
 
 def getCategoryList():
     # Test the connection
-    result = db_config.connection().execute(text("SELECT * FROM category"))
+    cnn = db_config.connection()
+    result = cnn.execute(text("SELECT * FROM category"))
     data = result.fetchall()
+    cnn.close()
     category_list = []
     for item in data:
         category_list.append(

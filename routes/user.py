@@ -55,6 +55,7 @@ def createUser():
             )
 	"""))
     cnn.commit()
+    cnn.close()
     return f"{result}"
 
 
@@ -81,6 +82,7 @@ def updateUser():
         `id` = '{user_id}'
 	"""))
     cnn.commit()
+    cnn.close()
     return f"{result}"
 
 @app.post('/admin/delete-user')
@@ -90,5 +92,6 @@ def deleteUser():
     cnn = db_config.connection()
     result = cnn.execute(text(f"""DELETE FROM `user` WHERE `id` = {user_id}"""))
     cnn.commit()
+    cnn.close()
     return f"{result}"
 

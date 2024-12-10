@@ -81,6 +81,7 @@
                             <button
                                     type="button"
                                     class="btn btn-outline-info mr-2"
+                                    @click="filterByCategory('all')"
                                     style="text-transform: uppercase"
                             >
                                 All Category
@@ -88,6 +89,7 @@
                             <button
                                     v-for="(item, index) in category_list"
                                     :key="'category_list_'+index"
+                                    @click="filterByCategory(item.name)"
                                     type="button"
                                     class="btn btn-outline-info mr-2"
                                     style="text-transform: uppercase"
@@ -189,7 +191,11 @@
                                 <td>0.0 %</td>
                                 <td>[[ item.qty * item.price ]]</td>
                                 <td>
-                                    <a href="#" class="text-danger">
+                                    <a
+                                            href="#"
+                                            class="text-danger"
+                                            @click="removeItem(index)"
+                                    >
                                         <i class="fas fa-trash"></i>
                                         លុប
                                     </a>
@@ -243,6 +249,7 @@
                         </div>
                         <div class="col-6">
                             <button
+                                    @click="payment"
                                     type="button"
                                     class="btn btn-success w-100"
                             >Pay
@@ -261,6 +268,7 @@
         el: '#app',
         delimiters: ['[[', ']]'],
         data: {
+            product_list_old: [],
             product_list: [],
             category_list: [],
             selected_product: [],
@@ -279,7 +287,8 @@
                 $.LoadingOverlay("show");
                 axios.get(api_url)
                     .then(function (response) {
-                        vm.product_list = response.data.product_list
+                        vm.product_list_old = response.data.product_list
+                        vm.product_list = vm.product_list_old
                         vm.category_list = response.data.category_list
                         $.LoadingOverlay("hide");
                     })
@@ -306,13 +315,14 @@
                 } else {
                     found.qty++
                 }
+                this.sound('click')
 
             },
-            resetSale() {
-                if (this.selected_product.length <= 0){
+            removeItem(index) {
+                if (this.selected_product.length <= 0) {
                     return;
                 }
-
+                this.sound('error')
                 Swal.fire({
                     title: "Are you sure?",
                     text: "You won't be able to revert this!",
@@ -320,7 +330,28 @@
                     showCancelButton: true,
                     confirmButtonColor: "#3085d6",
                     cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, Reset it!"
+                    confirmButtonText: "yes remove it!",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        //
+                        this.selected_product.splice(index, 1)
+                    }
+                });
+
+            },
+            resetSale() {
+                if (this.selected_product.length <= 0) {
+                    return;
+                }
+                this.sound('error')
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You won't be able to revert this!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "yes reset it!",
                 }).then((result) => {
                     if (result.isConfirmed) {
                         this.selected_product = []
@@ -328,7 +359,94 @@
                     }
                 });
 
-            }
+            },
+            filterByCategory(category_name) {
+                if (category_name === 'all') {
+                    this.product_list = this.product_list_old
+                } else {
+                    this.product_list = this.product_list_old.filter(obj => {
+                        return obj.category_name == category_name
+                    })
+                }
+                this.sound('click')
+            },
+            sound(type) {
+                let click = new Audio('/static/sound/click.mp3');
+                let success = new Audio('/static/sound/success.mp3');
+                let error = new Audio('/static/sound/error.mp3');
+                let playing = new Audio('/static/sound/playing.mp3');
+                if (type == 'click') {
+                    click.play()
+                }
+                if (type == 'success') {
+                    success.play()
+                }
+                if (type == 'error') {
+                    error.play()
+                }
+                if (type == 'playing') {
+                    playing.play()
+                }
+            },
+            payment() {
+                if (this.selected_product.length <= 0) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Oops...🥴",
+                        text: "Please select at least one product",
+                    });
+                    this.sound('error')
+                    return;
+                }
+
+                if (this.subTotal > this.received_amount) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Oops...🥴",
+                        text: "Received Amount can not smaller than grand total",
+                    });
+                    this.sound('error')
+                    return;
+                }
+
+                //send data to api server
+                let vm = this
+                let api_url = "http://127.0.0.1:5000/pos/payment"
+                let input = {
+                    selected_product: vm.selected_product,
+                    total_amount: parseFloat(vm.subTotal),
+                    received_amount: parseFloat(vm.received_amount),
+                    change_amount: parseFloat(vm.received_amount) - parseFloat(vm.subTotal),
+                }
+                $.LoadingOverlay("show");
+                axios.post(api_url, input)
+                    .then(function (response) {
+                        $.LoadingOverlay("hide");
+                        console.log(response.status)
+                        if (response.status == 200) {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Completed",
+                                text: "Payment successes",
+                            });
+
+                            //reset sale
+                            vm.sound('success')
+                            vm.selected_product = []
+                            vm.received_amount = 0
+                        }
+
+                    })
+                    .catch(function (error) {
+                        $.LoadingOverlay("hide");
+                        // handle error
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error While processing",
+                            text: error,
+                        });
+                    })
+            },
         },
         computed: {
             subTotal() {

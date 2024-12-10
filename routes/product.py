@@ -42,7 +42,7 @@ def createProduct():
             )
 	"""))
     cnn.commit()
-    cnn.close();
+    cnn.close()
     return f"{result}"
 
 
@@ -68,6 +68,7 @@ def updateProduct():
         `id` = '{product_id}'
 	"""))
     cnn.commit()
+    cnn.close()
     return f"{result}"
 
 @app.post('/admin/delete-product')
@@ -77,12 +78,14 @@ def deleteProduct():
     cnn = db_config.connection()
     result = cnn.execute(text(f"""DELETE FROM `product` WHERE `id` = {product_id}"""))
     cnn.commit()
+    cnn.close()
     return f"{result}"
 
 
 def getProductList():
     # Test the connection
-    result = db_config.connection().execute(
+    cnn = db_config.connection()
+    result = cnn.execute(
         text("""
                     SELECT
                 product.id,
@@ -98,6 +101,7 @@ def getProductList():
         """)
     )
     data = result.fetchall()
+    cnn.close()
     product_list = []
     for item in data:
         product_list.append(
@@ -111,6 +115,5 @@ def getProductList():
                 'category_name': item[6],
             }
         )
-    result.close()
     return product_list
 
