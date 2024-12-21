@@ -1,4 +1,4 @@
-from app import app, render_template, request, jsonify
+from app import app, render_template, request, jsonify, redirect, session
 from helpers import db_config
 from sqlalchemy import text
 from routes.category import getCategoryList
@@ -8,6 +8,8 @@ from datetime import datetime
 
 @app.route('/pos')
 def pos():
+    if not ('is_login' in session):
+        return redirect('/login')
     return render_template("pos/pos.html")
 
 

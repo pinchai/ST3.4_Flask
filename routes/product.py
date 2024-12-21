@@ -1,4 +1,4 @@
-from app import app, render_template, request, jsonify
+from app import app, render_template, request, jsonify, redirect, session
 from helpers import db_config
 from sqlalchemy import text
 from routes.category import getCategoryList
@@ -6,6 +6,8 @@ from routes.category import getCategoryList
 
 @app.route('/admin/product')
 def product():
+    if not ('is_login' in session):
+        return redirect('/login')
     module = "product"
     return render_template("admin/product.html", module=module)
 
@@ -70,6 +72,7 @@ def updateProduct():
     cnn.commit()
     cnn.close()
     return f"{result}"
+
 
 @app.post('/admin/delete-product')
 def deleteProduct():

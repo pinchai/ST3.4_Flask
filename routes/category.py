@@ -1,10 +1,12 @@
-from app import app, render_template, request
+from app import app, render_template, request, session, redirect
 from helpers import db_config
 from sqlalchemy import text
 
 
 @app.route('/admin/category')
 def category():
+    if not ('is_login' in session):
+        return redirect('/login')
     module = "category"
     return render_template("admin/category.html", module=module)
 
@@ -53,6 +55,7 @@ def updateCategory():
     cnn.commit()
     cnn.close()
     return f"{result}"
+
 
 @app.post('/admin/delete-category')
 def deleteCategory():

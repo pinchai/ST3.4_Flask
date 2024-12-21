@@ -1,16 +1,20 @@
-from app import app, render_template, request
+from app import app, render_template, request, session, redirect
 from helpers import db_config
 from sqlalchemy import text
 
 
 @app.route('/admin/user')
 def user():
+    if not ('is_login' in session):
+        return redirect('/login')
     module = "user"
     return render_template("admin/user.html", module=module)
 
 
 @app.get('/admin/get-user')
 def getUser():
+    if not ('is_login' in session):
+        return redirect('/login')
     # Test the connection
     result = db_config.connection().execute(text("SELECT * FROM user"))
     data = result.fetchall()
@@ -33,6 +37,9 @@ def getUser():
 
 @app.post('/admin/create-user')
 def createUser():
+    if not ('is_login' in session):
+        return redirect('/login')
+
     json_data = request.get_json()
     name = json_data['name']
     gender = json_data['gender']
@@ -61,6 +68,9 @@ def createUser():
 
 @app.post('/admin/update-user')
 def updateUser():
+    if not ('is_login' in session):
+        return redirect('/login')
+
     json_data = request.get_json()
     user_id = json_data['id']
     name = json_data['name']
@@ -84,6 +94,7 @@ def updateUser():
     cnn.commit()
     cnn.close()
     return f"{result}"
+
 
 @app.post('/admin/delete-user')
 def deleteUser():
