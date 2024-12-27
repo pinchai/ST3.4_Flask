@@ -78,6 +78,15 @@
 pip install -r requirements.txt
 ````
 
+**_Config database_**
+````
+1. Execute File 'st34_pos.sql' in dataserver (Mysql)
+2. Cd to helpers folder Edit Connection string (db_config.py)
+    ** engine = create_engine("mysql+mysqlconnector://your_database_name:your_database_password@127.0.0.1/your_database_name")
+    ** Example: engine = create_engine("mysql+mysqlconnector://root:mysql@127.0.0.1/st34_pos")
+
+````
+
 ### Start Production server
 ```
 flask run --host=0.0.0.0 --port=5050
@@ -88,8 +97,9 @@ flask run --host=0.0.0.0 --port=5050
 flask run --debug --host=0.0.0.0 --port=5050
 ```
 
-**_pip freeze_**
+## Login Into System
 ```
-pip3 freeze > requirements.txt  # Python3
-pip freeze > requirements.txt  # Python2
+URL: http://127.0.0.1:5000/login
+Username: admin
+Password: 123
 ```
